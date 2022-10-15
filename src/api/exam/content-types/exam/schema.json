@@ -4,7 +4,8 @@
   "info": {
     "singularName": "exam",
     "pluralName": "exams",
-    "displayName": "Exam"
+    "displayName": "Exam",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -14,8 +15,21 @@
     "questions": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::question.question",
+      "target": "api::answer-of-user.answer-of-user",
       "mappedBy": "exam"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "exam"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "DONE",
+        "IN_PROGRESS"
+      ]
     }
   }
 }

@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "answer_of_users",
+  "info": {
+    "singularName": "answer-of-user",
+    "pluralName": "answer-of-users",
+    "displayName": "Answer Of User",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "question": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::question.question"
+    },
+    "answer": {
+      "type": "enumeration",
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "required": false
+    },
+    "exam": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::exam.exam",
+      "inversedBy": "questions"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "available_exams",
+  "info": {
+    "singularName": "available-exam",
+    "pluralName": "available-exams",
+    "displayName": "Available Exam",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "questions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::question.question",
+      "mappedBy": "available_exam"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "N2",
+        "N3",
+        "N4",
+        "N5"
+      ]
+    }
+  }
+}
