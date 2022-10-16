@@ -39,6 +39,12 @@
     },
     "submitAt": {
       "type": "datetime"
+    },
+    "availableExam": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::available-exam.available-exam",
+      "inversedBy": "exam"
     }
   }
 }

@@ -1,4 +1,3 @@
-
 const { yup, validateYupSchema } = require("@strapi/utils");
 const { EXAM_TYPES_ENUM } = require("../enum/exam-types.enum");
 
@@ -20,6 +19,10 @@ const examFromExamAvailableBodyYubSchema = yup.object({
   examAvailableId: yup.number().required(),
 });
 
+const examStartBodyYubSchema = yup.object({
+  examId: yup.number().required(),
+});
+
 module.exports = {
   validateExamGenerateBodyYupSchema: validateYupSchema(
     examGenerateBodyYupSchema
@@ -27,4 +30,5 @@ module.exports = {
   validateExamFromExamAvailableBodyYubSchema: validateYupSchema(
     examFromExamAvailableBodyYubSchema
   ),
+  validateExamStartBodyYubSchema: validateYupSchema(examStartBodyYubSchema),
 };

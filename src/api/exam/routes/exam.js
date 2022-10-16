@@ -15,5 +15,15 @@ module.exports = {
       method: "POST",
       path: "/exam/generate",
     },
+    {
+      handler: "exam.start",
+      path: "/exam/start",
+      method: "POST",
+    },
+    {
+      handler: "exam.getAll",
+      path: "/exam/all",
+      method: "GET",
+    },
   ],
 };

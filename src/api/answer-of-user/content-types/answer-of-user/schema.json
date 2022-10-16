@@ -23,8 +23,7 @@
         "A",
         "B",
         "C",
-        "D",
-        "NONE"
+        "D"
       ],
       "required": false
     }
