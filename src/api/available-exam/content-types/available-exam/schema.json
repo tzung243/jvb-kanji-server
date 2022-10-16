@@ -24,8 +24,7 @@
     "questions": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::question.question",
-      "mappedBy": "availableExam"
+      "target": "api::question.question"
     }
   }
 }

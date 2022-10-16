@@ -15,8 +15,7 @@
     "questions": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::question.question",
-      "mappedBy": "exam"
+      "target": "api::answer-of-user.answer-of-user"
     },
     "user": {
       "type": "relation",

@@ -50,18 +50,6 @@
         "C",
         "D"
       ]
-    },
-    "exam": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::exam.exam",
-      "inversedBy": "questions"
-    },
-    "availableExam": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::available-exam.available-exam",
-      "inversedBy": "questions"
     }
   }
 }

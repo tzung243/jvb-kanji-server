@@ -16,8 +16,15 @@ const examGenerateBodyYupSchema = yup.object({
   label: yup.string().min(5),
 });
 
+const examFromExamAvailableBodyYubSchema = yup.object({
+  examAvailableId: yup.number().required(),
+});
+
 module.exports = {
   validateExamGenerateBodyYupSchema: validateYupSchema(
     examGenerateBodyYupSchema
+  ),
+  validateExamFromExamAvailableBodyYubSchema: validateYupSchema(
+    examFromExamAvailableBodyYubSchema
   ),
 };
