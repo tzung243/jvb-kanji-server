@@ -3,7 +3,9 @@
 const createHttpError = require("http-errors");
 const {
   validateExamGenerateBodyYupSchema,
+  validateExamAnswerBodyYupSchema,
 } = require("../../../utils/exam.validation");
+const { validateExamSelectionParamYupSchema } = require("../../../utils/param.validation");
 const {
   validateQueryPartitionYupSchema,
 } = require("../../../utils/query.validation");
@@ -21,6 +23,11 @@ const sanitizeExam = (exam) => {
 const { createCoreController } = require("@strapi/strapi").factories;
 
 module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
+  async validateExam(exam) {
+    if (exam.status === "IN_PROGRESS") {
+        
+    }
+  },
   // API generate exam only authorization user
   async generate(ctx) {
     try {
@@ -49,16 +56,9 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
   },
 
   async start(ctx) {
-    try {
-      await validateExamGenerateBodyYupSchema(ctx.request.body);
-    } catch (error) {
-      throw createHttpError(400, "Exam Id is required!");
-    }
-    const { examId } = ctx.request.body;
-    const exam = await strapi.entityService.findOne("api::exam.exam", examId);
-    if (!exam) {
-      throw createHttpError(404, "Can not found exam!");
-    }
+    const exam = await strapi
+      .service("api::exam.exam")
+      .handlerFindExamById(ctx.request.body);
     if (exam.status !== "DRAFT") {
       throw createHttpError(
         400,
@@ -67,7 +67,7 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
     }
     const examAfterUpdate = await strapi.entityService.update(
       "api::exam.exam",
-      examId,
+      exam.id,
       {
         data: {
           status: "IN_PROGRESS",
@@ -109,6 +109,75 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
       limit: _limit,
       page: _page,
       start: _limit * _page,
+    });
+  },
+
+  async submit(ctx) {
+    const exam = await strapi
+      .service("api::exam.exam")
+      .handlerFindExamById(ctx.request.body);
+    let answerCorrectQuantity = 0;
+    for (let counter = 0; counter < exam.questions.length; counter++) {
+      const answerOfUser = exam.questions[counter];
+      if (answerOfUser.answer === answerOfUser.question.answerCorrect) {
+        answerCorrectQuantity += 1;
+      }
+    }
+
+    const examAfterUpdate = await strapi.entityService.update(
+      "api::exam:exam",
+      exam.id,
+      {
+        data: {
+          score: Math.round(answerCorrectQuantity / exam.questions.length),
+        },
+      }
+    );
+    ctx.send({
+      data: {
+        id: examAfterUpdate.id,
+        score: examAfterUpdate.score,
+      },
+    });
+  },
+
+  async selection(ctx) {
+    try {
+      await validateExamSelectionParamYupSchema(ctx.params);
+    } catch (error) {
+      throw createHttpError(404, "Can not format param!");
+    }
+    try {
+      await validateExamAnswerBodyYupSchema(ctx.body);
+    } catch (error) {
+      throw createHttpError(400, "Can not format answer in body!");
+    }
+
+    const { examId, questionId } = ctx.params;
+    const { answer } = ctx.body;
+
+    const exam = await strapi.entityService.findOne("api::exam.exam", examId);
+
+    if (!exam) {
+      throw createHttpError(404, "Can not found exam!");
+    }
+    if (exam.status === "IN_PROGRESS") {
+      throw createHttpError(
+        400,
+        exam === "DRAFT" ? "Need run start!" : "Exam is completed!"
+      );
+    }
+    const answerOfUser = await strapi.entityService.findOne(
+      "api::answer-of-user.answer-of-user",
+      questionId,
+      {
+        data: {
+          answer,
+        },
+      }
+    );
+    ctx.send({
+      data: answerOfUser,
     });
   },
 }));

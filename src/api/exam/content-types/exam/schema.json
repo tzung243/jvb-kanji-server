@@ -40,11 +40,10 @@
     "submitAt": {
       "type": "datetime"
     },
-    "availableExam": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::available-exam.available-exam",
-      "inversedBy": "exam"
+    "score": {
+      "type": "decimal",
+      "max": 100,
+      "min": 0
     }
   }
 }

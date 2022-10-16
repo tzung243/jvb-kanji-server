@@ -25,5 +25,15 @@ module.exports = {
       path: "/exam/all",
       method: "GET",
     },
+    {
+      handler: "exam.submit",
+      path: "/exam/submit",
+      method: "POST",
+    },
+    {
+      handler: "exam.selection",
+      path: "/exam/selection/:examId/:questionId",
+      method: "POST",
+    },
   ],
 };

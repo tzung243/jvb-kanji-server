@@ -32,7 +32,9 @@ module.exports = createCoreService("api::exam.exam", ({ strapi }) => ({
         },
       }
     );
-    const questionIds = await this.selectionQuestion({ questions, length });
+    const questionIds = await strapi
+      .service("api::exam.exam")
+      .selectionQuestion({ questions, length });
     return this.make({
       questionIds,
       user,
@@ -97,5 +99,22 @@ module.exports = createCoreService("api::exam.exam", ({ strapi }) => ({
       result.push(questionId);
     }
     return result;
+  },
+
+  async handlerFindExamById({ body, detail = false }) {
+    try {
+      await validateExamGenerateBodyYupSchema(body);
+    } catch (error) {
+      throw createHttpError(400, "Exam Id is required!");
+    }
+    const populate = detail ? ["questions", "questions.question"] : [];
+    const { examId } = body;
+    const exam = await strapi.entityService.findOne("api::exam.exam", examId, {
+      populate,
+    });
+    if (!exam) {
+      throw createHttpError(404, "Can not found exam!");
+    }
+    return exam;
   },
 }));
