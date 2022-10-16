@@ -15,6 +15,7 @@
     "@strapi/plugin-users-permissions": "4.4.3",
     "@strapi/strapi": "4.4.3",
     "better-sqlite3": "7.4.6",
+    "http-errors": "^2.0.0",
     "pg": "^8.8.0",
     "strapi-plugin-import-export-entries": "^1.16.2"
   },

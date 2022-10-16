@@ -67,7 +67,7 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::exam.exam",
-      "inversedBy": "user"
+      "mappedBy": "user"
     }
   }
 }

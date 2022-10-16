@@ -57,7 +57,7 @@
       "target": "api::exam.exam",
       "inversedBy": "questions"
     },
-    "available_exam": {
+    "availableExam": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::available-exam.available-exam",

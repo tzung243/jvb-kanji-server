@@ -12,12 +12,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "questions": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::question.question",
-      "mappedBy": "available_exam"
-    },
     "type": {
       "type": "enumeration",
       "enum": [
@@ -25,8 +19,13 @@
         "N3",
         "N4",
         "N5"
-      ],
-      "required": true
+      ]
+    },
+    "questions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::question.question",
+      "mappedBy": "availableExam"
     }
   }
 }

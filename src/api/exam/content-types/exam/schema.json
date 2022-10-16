@@ -15,7 +15,7 @@
     "questions": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::answer-of-user.answer-of-user",
+      "target": "api::question.question",
       "mappedBy": "exam"
     },
     "user": {
@@ -28,8 +28,18 @@
       "type": "enumeration",
       "enum": [
         "DONE",
-        "IN_PROGRESS"
+        "IN_PROGRESS",
+        "DRAFT"
       ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "startAt": {
+      "type": "datetime"
+    },
+    "submitAt": {
+      "type": "datetime"
     }
   }
 }
