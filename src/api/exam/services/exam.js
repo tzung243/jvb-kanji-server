@@ -38,6 +38,7 @@ module.exports = createCoreService("api::exam.exam", ({ strapi }) => ({
       user,
       data: {
         label,
+        quickstart,
       },
     });
   },
