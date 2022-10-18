@@ -21,13 +21,12 @@ const examFromExamAvailableBodyYubSchema = yup.object({
 });
 
 const handlerFindExamByIdBodyYupSchema = yup.object({
-    examId: yup.number().required(),
-  });
+  examId: yup.number().required(),
+});
 
 const examStartBodyYubSchema = handlerFindExamByIdBodyYupSchema;
 
 const examSubmitBodyYupSchema = examStartBodyYubSchema;
-
 
 const examAnswerBodyYupSchema = yup.object({
   answer: yup

@@ -63,9 +63,9 @@
       "inversedBy": "users",
       "configurable": false
     },
-    "exam": {
+    "exams": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::exam.exam",
       "mappedBy": "user"
     }

@@ -1,6 +1,9 @@
 "use strict";
 
 const createHttpError = require("http-errors");
+const {
+  validateHandlerFindExamByIdBodyYupSchema,
+} = require("../../../utils/exam.validation");
 
 /**
  * exam service
@@ -70,11 +73,13 @@ module.exports = createCoreService("api::exam.exam", ({ strapi }) => ({
         status: quickstart ? "IN_PROGRESS" : "DRAFT",
         startAt: quickstart ? Date.now() : undefined,
       },
+      populate: ["questions"],
     });
     return {
       id: exam.id,
       label,
       quickstart,
+      questions: exam.questions,
       status: exam.status,
       startAt: exam.startAt,
     };
@@ -101,9 +106,9 @@ module.exports = createCoreService("api::exam.exam", ({ strapi }) => ({
     return result;
   },
 
-  async handlerFindExamById({ body, detail = false }) {
+  async handlerFindExamById({ body, userId, detail = false }) {
     try {
-      await validateExamGenerateBodyYupSchema(body);
+      await validateHandlerFindExamByIdBodyYupSchema(body);
     } catch (error) {
       throw createHttpError(400, "Exam Id is required!");
     }

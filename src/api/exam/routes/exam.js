@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * exam router
@@ -34,6 +34,16 @@ module.exports = {
       handler: "exam.selection",
       path: "/exam/selection/:examId/:questionId",
       method: "POST",
+    },
+    {
+      handler: "exam.findOne",
+      path: "/exam/:examId",
+      method: "GET",
+    },
+    {
+      handler: "exam.findQuestion",
+      path: "/exam/:examId/:questionId",
+      method: "GET",
     },
   ],
 };

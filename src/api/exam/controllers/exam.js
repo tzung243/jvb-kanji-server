@@ -5,7 +5,9 @@ const {
   validateExamGenerateBodyYupSchema,
   validateExamAnswerBodyYupSchema,
 } = require("../../../utils/exam.validation");
-const { validateExamSelectionParamYupSchema } = require("../../../utils/param.validation");
+const {
+  validateExamSelectionParamYupSchema,
+} = require("../../../utils/param.validation");
 const {
   validateQueryPartitionYupSchema,
 } = require("../../../utils/query.validation");
@@ -14,18 +16,11 @@ const {
  * exam controller
  */
 
-const sanitizeExam = (exam) => {
-  const userSchema = strapi.getModel("api::exam.exam");
-
-  return sanitize.contentAPI.output(exam, userSchema);
-};
-
 const { createCoreController } = require("@strapi/strapi").factories;
 
 module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
   async validateExam(exam) {
     if (exam.status === "IN_PROGRESS") {
-        
     }
   },
   // API generate exam only authorization user
@@ -56,9 +51,9 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
   },
 
   async start(ctx) {
-    const exam = await strapi
-      .service("api::exam.exam")
-      .handlerFindExamById(ctx.request.body);
+    const exam = await strapi.service("api::exam.exam").handlerFindExamById({
+      body: ctx.request.body,
+    });
     if (exam.status !== "DRAFT") {
       throw createHttpError(
         400,
@@ -73,6 +68,7 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
           status: "IN_PROGRESS",
           startAt: Date.now(),
         },
+        populate: ["questions"],
       }
     );
     ctx.send({
@@ -93,19 +89,20 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
     const _page = page ?? 0;
     const exams = await strapi.entityService.findMany("api::exam.exam", {
       filters: {
-        user: ctx.state.user.id,
+        user: {
+          id: ctx.state.user.id,
+        },
       },
       sort: {
         startAt: "DESC",
-        createAt: "DESC",
+        createdAt: "DESC",
       },
+      populate: ["questions"],
       limit: _limit,
       start: _limit * _page,
     });
     ctx.send({
-      data: exams.map((exam) => {
-        return sanitizeExam(exam);
-      }),
+      data: exams,
       limit: _limit,
       page: _page,
       start: _limit * _page,
@@ -113,9 +110,10 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
   },
 
   async submit(ctx) {
-    const exam = await strapi
-      .service("api::exam.exam")
-      .handlerFindExamById(ctx.request.body);
+    const exam = await strapi.service("api::exam.exam").handlerFindExamById({
+      body: ctx.request.body,
+      detail: true,
+    });
     let answerCorrectQuantity = 0;
     for (let counter = 0; counter < exam.questions.length; counter++) {
       const answerOfUser = exam.questions[counter];
@@ -125,11 +123,12 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
     }
 
     const examAfterUpdate = await strapi.entityService.update(
-      "api::exam:exam",
+      "api::exam.exam",
       exam.id,
       {
         data: {
           score: Math.round(answerCorrectQuantity / exam.questions.length),
+          status: "DONE",
         },
       }
     );
@@ -178,6 +177,45 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
     );
     ctx.send({
       data: answerOfUser,
+    });
+  },
+  async findOne(ctx) {
+    const { examId } = ctx.params;
+    const exam = await strapi.entityService.findOne("api::exam.exam", examId, {
+      populate: ["questions"],
+      filters: {
+        user: {
+          id: ctx.state.user.id,
+        },
+      },
+    });
+    ctx.send({
+      data: exam,
+    });
+  },
+  async findQuestion(ctx) {
+    const { examId, questionId } = ctx.params;
+    const exam = await strapi.entityService.findOne("api::exam.exam", examId, {
+      populate: {
+        questions: {
+          filters: {
+            id: questionId,
+          },
+          populate: {
+            question: {
+              fields: ["topic", "a", "b", "c", "d", "type"],
+            },
+          },
+        },
+      },
+      filters: {
+        user: {
+          id: ctx.state.user.id,
+        },
+      },
+    });
+    ctx.send({
+      data: exam?.questions[0],
     });
   },
 }));
