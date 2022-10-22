@@ -114,3 +114,5 @@ build
 
 *.lock 
 *-lock.json
+
+documentation/
