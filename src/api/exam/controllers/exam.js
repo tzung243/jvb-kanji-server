@@ -66,7 +66,7 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
       {
         data: {
           status: "IN_PROGRESS",
-          startAt: Date.now(),
+          startedAt: Date.now(),
         },
         populate: ["questions"],
       }
@@ -78,7 +78,7 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
     });
   },
 
-  async getAll(ctx) {
+  async all(ctx) {
     try {
       await validateQueryPartitionYupSchema(ctx.request.query);
     } catch (error) {
@@ -129,6 +129,7 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
         data: {
           score: Math.round(answerCorrectQuantity / exam.questions.length),
           status: "DONE",
+          submittedAt: Date.now(),
         },
       }
     );
@@ -179,21 +180,35 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
       data: answerOfUser,
     });
   },
-  async findOne(ctx) {
+
+  async exam(ctx) {
     const { examId } = ctx.params;
     const exam = await strapi.entityService.findOne("api::exam.exam", examId, {
-      populate: ["questions"],
       filters: {
         user: {
           id: ctx.state.user.id,
         },
       },
     });
+    if (!exam) {
+      throw createHttpError(404, "Can not found exam!");
+    }
+
+    let result = await strapi.entityService.findOne("api::exam.exam", examId, {
+      filters: {
+        user: {
+          id: ctx.state.user.id,
+        },
+      },
+      populate: ["questions", "questions.question"],
+    });
+
     ctx.send({
-      data: exam,
+      data: result,
     });
   },
-  async findQuestion(ctx) {
+
+  async question(ctx) {
     const { examId, questionId } = ctx.params;
     const exam = await strapi.entityService.findOne("api::exam.exam", examId, {
       populate: {

@@ -38,12 +38,13 @@ module.exports = createCoreService("api::exam.exam", ({ strapi }) => ({
     const questionIds = await strapi
       .service("api::exam.exam")
       .selectionQuestion({ questions, length });
-    return this.make({
+    return strapi.service("api::exam.exam").make({
       questionIds,
       user,
       data: {
         label,
         quickstart,
+        type,
       },
     });
   },
@@ -52,7 +53,7 @@ module.exports = createCoreService("api::exam.exam", ({ strapi }) => ({
    *
    * @param {{questionIds: number[]}} param
    */
-  async make({ questionIds, user, data: { label, quickstart } }) {
+  async make({ questionIds, user, data: { label, quickstart, type } }) {
     const answerOfUserIds = [];
     for (let counter = 0; counter < questionIds.length; counter += 1) {
       const answerOfUser = await strapi.entityService.create(
@@ -72,6 +73,7 @@ module.exports = createCoreService("api::exam.exam", ({ strapi }) => ({
         label: label,
         status: quickstart ? "IN_PROGRESS" : "DRAFT",
         startAt: quickstart ? Date.now() : undefined,
+        type,
       },
       populate: ["questions"],
     });

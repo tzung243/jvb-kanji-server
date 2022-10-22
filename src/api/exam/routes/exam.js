@@ -21,7 +21,7 @@ module.exports = {
       method: "POST",
     },
     {
-      handler: "exam.getAll",
+      handler: "exam.all",
       path: "/exam/all",
       method: "GET",
     },
@@ -36,12 +36,12 @@ module.exports = {
       method: "POST",
     },
     {
-      handler: "exam.findOne",
+      handler: "exam.exam",
       path: "/exam/:examId",
       method: "GET",
     },
     {
-      handler: "exam.findQuestion",
+      handler: "exam.question",
       path: "/exam/:examId/:questionId",
       method: "GET",
     },

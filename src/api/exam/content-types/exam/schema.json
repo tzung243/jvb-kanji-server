@@ -34,10 +34,10 @@
     "label": {
       "type": "string"
     },
-    "startAt": {
+    "startedAt": {
       "type": "datetime"
     },
-    "submitAt": {
+    "submittedAt": {
       "type": "datetime"
     },
     "score": {
