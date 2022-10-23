@@ -124,4 +124,11 @@ module.exports = createCoreService("api::exam.exam", ({ strapi }) => ({
     }
     return exam;
   },
+
+  // getStateExam({ exam }) {
+  //   if (!exam.startedAt || exam.status === "DRAFT") {
+  //     return "DRAFT";
+  //   } 
+
+  // },
 }));

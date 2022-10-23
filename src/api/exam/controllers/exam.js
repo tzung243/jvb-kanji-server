@@ -80,28 +80,51 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
 
   async all(ctx) {
     const { limit, page } = ctx.request.query;
-    const _limit = limit ?? 10;
-    const _page = page ?? 0;
-    const exams = await strapi.entityService.findMany("api::exam.exam", {
-      filters: {
-        user: {
-          id: ctx.state.user.id,
+    if (!limit) {
+      const exams = await strapi.entityService.findMany("api::exam.exam", {
+        filters: {
+          user: {
+            id: ctx.state.user.id,
+          },
         },
-      },
-      sort: {
-        startedAt: "DESC",
-        createdAt: "DESC",
-      },
-      populate: ["questions"],
-      limit: _limit,
-      start: _limit * _page,
-    });
-    ctx.send({
-      data: exams,
-      limit: _limit,
-      page: _page,
-      start: _limit * _page,
-    });
+        sort: {
+          startedAt: "DESC",
+          createdAt: "DESC",
+        },
+        populate: {
+          questions: {
+            sort: {
+              id: "ASC",
+            },
+          },
+        },
+      });
+      ctx.send({
+        data: exams,
+      });
+    } else {
+      const _page = page ?? 0;
+      const exams = await strapi.entityService.findMany("api::exam.exam", {
+        filters: {
+          user: {
+            id: ctx.state.user.id,
+          },
+        },
+        sort: {
+          startedAt: "DESC",
+          createdAt: "DESC",
+        },
+        populate: ["questions"],
+        limit: limit,
+        start: limit * _page,
+      });
+      ctx.send({
+        data: exams,
+        limit: limit,
+        page: _page,
+        start: limit * _page,
+      });
+    }
   },
 
   async submit(ctx) {
@@ -143,26 +166,26 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
       throw createHttpError(404, "Can not format param!");
     }
     try {
-      await validateExamAnswerBodyYupSchema(ctx.body);
+      await validateExamAnswerBodyYupSchema(ctx.request.body);
     } catch (error) {
       throw createHttpError(400, "Can not format answer in body!");
     }
 
     const { examId, questionId } = ctx.params;
-    const { answer } = ctx.body;
+    const { answer } = ctx.request.body;
 
     const exam = await strapi.entityService.findOne("api::exam.exam", examId);
 
     if (!exam) {
       throw createHttpError(404, "Can not found exam!");
     }
-    if (exam.status === "IN_PROGRESS") {
+    if (exam.status !== "IN_PROGRESS") {
       throw createHttpError(
         400,
         exam === "DRAFT" ? "Need run start!" : "Exam is completed!"
       );
     }
-    const answerOfUser = await strapi.entityService.findOne(
+    const answerOfUser = await strapi.entityService.update(
       "api::answer-of-user.answer-of-user",
       questionId,
       {
@@ -189,18 +212,56 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
       throw createHttpError(404, "Can not found exam!");
     }
 
-    let result = await strapi.entityService.findOne("api::exam.exam", examId, {
-      filters: {
-        user: {
-          id: ctx.state.user.id,
-        },
-      },
-      populate: ["questions", "questions.question"],
-    });
+    if (exam.status === "DRAFT") {
+      ctx.send({
+        data: exam,
+      });
+    } else if (exam.status === "IN_PROGRESS") {
+      let result = await strapi.entityService.findOne(
+        "api::exam.exam",
+        examId,
+        {
+          filters: {
+            user: {
+              id: ctx.state.user.id,
+            },
+          },
+          populate: {
+            questions: {
+              populate: {
+                question: {
+                  fields: ["topic", "a", "b", "c", "d", "id"],
+                },
+              },
+              sort: {
+                id: "ASC",
+              },
+            },
+          },
+        }
+      );
 
-    ctx.send({
-      data: result,
-    });
+      ctx.send({
+        data: result,
+      });
+    } else {
+      let result = await strapi.entityService.findOne(
+        "api::exam.exam",
+        examId,
+        {
+          filters: {
+            user: {
+              id: ctx.state.user.id,
+            },
+          },
+          populate: ["questions", "questions.question"],
+        }
+      );
+
+      ctx.send({
+        data: result,
+      });
+    }
   },
 
   async question(ctx) {
