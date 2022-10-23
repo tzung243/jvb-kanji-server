@@ -79,11 +79,6 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
   },
 
   async all(ctx) {
-    try {
-      await validateQueryPartitionYupSchema(ctx.request.query);
-    } catch (error) {
-      throw createHttpError(400, "Can not format query parameter!");
-    }
     const { limit, page } = ctx.request.query;
     const _limit = limit ?? 10;
     const _page = page ?? 0;
@@ -94,7 +89,7 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
         },
       },
       sort: {
-        startAt: "DESC",
+        startedAt: "DESC",
         createdAt: "DESC",
       },
       populate: ["questions"],
