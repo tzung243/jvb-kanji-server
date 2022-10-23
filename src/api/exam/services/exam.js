@@ -72,7 +72,7 @@ module.exports = createCoreService("api::exam.exam", ({ strapi }) => ({
         user: user.id,
         label: label,
         status: quickstart ? "IN_PROGRESS" : "DRAFT",
-        startAt: quickstart ? Date.now() : undefined,
+        startedAt: quickstart ? Date.now() : undefined,
         type,
       },
       populate: ["questions"],
