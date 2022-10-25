@@ -135,17 +135,21 @@ module.exports = createCoreController("api::exam.exam", ({ strapi }) => ({
     let answerCorrectQuantity = 0;
     for (let counter = 0; counter < exam.questions.length; counter++) {
       const answerOfUser = exam.questions[counter];
-      if (answerOfUser.answer === answerOfUser.question.answerCorrect) {
+      if (answerOfUser.answer == answerOfUser.question.answerCorrect) {
         answerCorrectQuantity += 1;
       }
     }
+
+    console.log(answerCorrectQuantity);
 
     const examAfterUpdate = await strapi.entityService.update(
       "api::exam.exam",
       exam.id,
       {
         data: {
-          score: Math.round(answerCorrectQuantity / exam.questions.length),
+          score:
+            Math.round((answerCorrectQuantity / exam.questions.length) * 10000) /
+            100,
           status: "DONE",
           submittedAt: Date.now(),
         },
